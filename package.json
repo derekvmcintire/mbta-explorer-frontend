@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "leaflet": "^1.9.4",
+    "simple-fetch-ts": "^1.0.8",
     "svelte": "^5.15.0"
   }
 }
