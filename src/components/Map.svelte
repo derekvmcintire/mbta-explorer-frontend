@@ -1,16 +1,20 @@
 <script>
-  import { onMount } from 'svelte';
-  import L from 'leaflet';
+  import { onMount } from "svelte";
+  import * as L from "leaflet";
 
   let map;
 
   onMount(() => {
-    map = L.map('map').setView([42.3601, -71.0589], 13); // Center on Boston
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
+    console.log("Initializing Leaflet map...");
+    map = L.map("map").setView([42.3601, -71.0589], 13); // Boston
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap contributors",
     }).addTo(map);
+    console.log("Map initialized");
   });
 </script>
+
+<div id="map"></div>
 
 <style>
   #map {
@@ -18,5 +22,3 @@
     width: 100%;
   }
 </style>
-
-<div id="map"></div>
