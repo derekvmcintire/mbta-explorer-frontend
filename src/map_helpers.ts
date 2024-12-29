@@ -17,7 +17,18 @@ export const plotStop = (map: any, coordinates: any[], color: string): void => {
 export const plotMultipleRoutes = ((map: any, routes: any[]): any => {
   routes.forEach((route: any) => {
     const color = getRouteColor(route.id) || '';
-    plotRoute(map, route.coordinates, color);
+    
+    if (route.id === "Green-E") {
+      // for some reason Green-E has a lot of extra coordinates that are incorrect, so only using the first two
+      const newCoordinates = [route.coordinates[0], route.coordinates[1]]
+      plotRoute(map, newCoordinates, color);
+
+    } else {
+      plotRoute(map, route.coordinates, color);
+
+    }
+ 
+    
     route.stops.forEach((stop: any) => {
       const { attributes } = stop;
       const coordinates = [attributes.latitude, attributes.longitude];

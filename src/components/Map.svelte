@@ -27,7 +27,6 @@
     if (subwayLines === null) {
       console.log("No data found, handling gracefully.");
     } else {
-      console.log("Received subwayLines:", subwayLines);
       // Plot Subway data
       if (subwayLines.length > 0) {
         plotMultipleRoutes(map, subwayLines);
