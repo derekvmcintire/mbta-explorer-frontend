@@ -3,44 +3,71 @@ import { plotLiveData, plotMultipleRoutes } from "../map_helpers";
 import { SUBWAY_ROUTES } from "../constants";
 import type { Map as LeafletMap, Control } from 'leaflet';
 
+/**
+ * Base URL for fetching MBTA subway routes.
+ */
 const fetchMBTASubwayURL = `http://localhost:8080/api/routes?route_ids=${SUBWAY_ROUTES.join(",")}`;
-const getFetchLiveMBTASubwayDataURL = (routeId: string) => `http://localhost:8080/api/live?route_id=${routeId}`;
 
+/**
+ * Generates the URL for fetching live vehicle data for a specific route.
+ * @param routeId - The ID of the subway route.
+ * @returns A string URL for fetching live vehicle data.
+ */
+const getFetchLiveMBTASubwayDataURL = (routeId: string): string => 
+  `http://localhost:8080/api/live?route_id=${routeId}`;
+
+/**
+ * Fetches and updates live vehicle data on the map for all subway routes.
+ * 
+ * @param layerControl - Leaflet control for managing layers on the map.
+ * @returns A promise that resolves when live data updates are complete.
+ */
 export const updateLiveData = async (
-  map: LeafletMap,
   layerControl: Control.Layers
 ): Promise<void> => {
-  const liveDataPromises = SUBWAY_ROUTES.map(async (routeId: string) => {
-    const url = getFetchLiveMBTASubwayDataURL(routeId);
-    const liveVehicleCoordinates = await simpleFetch<any[]>(url);
+  try {
+    // Create promises for updating live data for each route
+    const liveDataPromises = SUBWAY_ROUTES.map(async (routeId: string) => {
+      const url = getFetchLiveMBTASubwayDataURL(routeId);
+      const liveVehicleCoordinates = await simpleFetch<any[]>(url);
 
-    if (liveVehicleCoordinates && liveVehicleCoordinates.length > 0) {
-      plotLiveData(map, layerControl, liveVehicleCoordinates, routeId);
-    }
-  });
+      if (liveVehicleCoordinates && liveVehicleCoordinates.length > 0) {
+        await plotLiveData(layerControl, liveVehicleCoordinates, routeId);
+      }
+    });
 
-  // Await all live data fetches
-  await Promise.all(liveDataPromises);
+    // Wait for all live data updates to complete
+    await Promise.all(liveDataPromises);
+  } catch (error) {
+    console.error("Error updating live data:", error);
+  }
 };
 
+/**
+ * Fetches subway route data and plots it on the map.
+ * After plotting route data, it fetches and plots live vehicle data for each route.
+ * 
+ * @param layerControl - Leaflet control for managing layers on the map.
+ * @returns A promise that resolves when the entire data-fetching and plotting process is complete.
+ */
+export const fetchMapData = async (
+  layerControl: Control.Layers
+): Promise<void> => {
+  try {
+    // Fetch subway route data
+    const subwayRouteData = await simpleFetch<any[]>(fetchMBTASubwayURL) || [];
 
+    if (subwayRouteData.length === 0) {
+      console.log("No subway route data found.");
+      return;
+    }
 
-// Function to fetch and plot subway route data
-export const fetchMapData = async (map: any, layerControl: any) => {
-  // Fetch Subway route data
-  const subwayRouteData = await simpleFetch<any[]>(fetchMBTASubwayURL) || [];
+    // Plot subway routes on the map
+    plotMultipleRoutes(layerControl, subwayRouteData);
 
-  if (subwayRouteData === null) {
-    console.log("No data found, handling gracefully.");
-    return;
+    // Fetch and plot live vehicle data
+    await updateLiveData(layerControl);
+  } catch (error) {
+    console.error("Error fetching and plotting map data:", error);
   }
-
-  // Plot Subway routes once data is fetched
-  if (subwayRouteData.length > 0) {
-    plotMultipleRoutes(map, layerControl, subwayRouteData);
-  }
-
-  // @TODO sort fetching live data on page load
-  // Now fetch and plot live vehicle data after the routes have been plotted
-  // await updateLiveData(map, layerControl);  // This ensures live data is plotted after routes
 };
