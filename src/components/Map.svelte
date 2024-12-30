@@ -3,7 +3,7 @@
   import * as L from "leaflet";
   import { fetchMapData, updateLiveData } from "../explorer-api/fetch_map";
   import { cartocdnTile } from "../constants";
-  import { mapStore } from "../stores/map_store";
+  import { mapLayerControl, mapStore } from "../stores/map_store";
 
   const tile = cartocdnTile;
 
@@ -15,20 +15,19 @@
     L.tileLayer(tile.url, {
       attribution: tile.attribution,
     }).addTo(map);
+
     const layerControl = L.control.layers({}).addTo(map);
 
+    mapLayerControl.set(layerControl);
     mapStore.set(map);
 
-    fetchMapData(layerControl);
+    fetchMapData();
 
     // Start polling
-    const POLLING_INTERVAL = 5000; // 5 seconds
+    const POLLING_INTERVAL = 15000; // 15 seconds
     const MAX_POLLING_TIME = 1800000;
 
-    const interval = setInterval(
-      () => updateLiveData(layerControl),
-      POLLING_INTERVAL
-    );
+    const interval = setInterval(() => updateLiveData(), POLLING_INTERVAL);
 
     setTimeout(() => {
       clearInterval(interval);

@@ -1,9 +1,8 @@
 import * as L from "leaflet";
-import { getRouteColor } from "./constants";
-import { liveData, overlays } from "./stores/boston_subway_store";
-import type { Control } from "leaflet";
+import { getRouteColor } from "../constants";
+import { liveData, overlays } from "../stores/boston_subway_store";
 import { get } from "svelte/store";
-import { mapStore, type MapStore } from "./stores/map_store";
+import { mapLayerControl, mapStore, type MapStore } from "../stores/map_store";
 
 // Define types for route and stop structures
 interface StopAttributes {
@@ -20,7 +19,7 @@ interface Route {
 interface RouteMap {
   [routeId: string]: {
     shape: L.Polyline;
-    stops: L.CircleMarker[];
+    stops: L.Circle[];
   };
 }
 
@@ -43,12 +42,12 @@ const createRouteShape = (coordinates: [number, number][], color: string): L.Pol
  * @param color - The border color of the stop marker.
  * @returns A Leaflet CircleMarker instance.
  */
-const createStopMarker = (latitude: number, longitude: number, color: string): L.CircleMarker => {
-  return L.circleMarker([latitude, longitude], {
+const createStopMarker = (latitude: number, longitude: number, color: string): L.Circle => {
+  return L.circle([latitude, longitude], {
     color,
     fillColor: "white",
     fillOpacity: 1,
-    radius: 10,
+    radius: 50,
   });
 };
 
@@ -59,10 +58,10 @@ const createStopMarker = (latitude: number, longitude: number, color: string): L
  * @param routes - An array of routes, each containing coordinates and stops.
  */
 export const plotMultipleRoutes = (
-  layerControl: L.Control.Layers,
   routes: Route[]
 ): void => {
   const map: MapStore = get(mapStore);
+  const layerControl = get(mapLayerControl)
 
   if (!map) {
     throw new Error("Map is undefined");
@@ -89,7 +88,7 @@ export const plotMultipleRoutes = (
     const routeLayerGroup = L.layerGroup([shape, ...stops]);
     routeLayerGroup.addTo(map);
 
-    layerControl.addOverlay(routeLayerGroup, `${routeId} Line`);
+    layerControl && layerControl.addOverlay(routeLayerGroup, `${routeId} Line`);
   });
 };
 
@@ -108,10 +107,11 @@ const routeLocks: Record<string, boolean> = {};
  * @param routeId - The ID of the route for which live data is being plotted.
  */
 export const plotLiveData = async (
-  layerControl: Control.Layers,
   vehicles: any[],
   routeId: string
 ): Promise<void> => {
+  const layerControl = get(mapLayerControl)
+  
   if (routeLocks[routeId]) {
     console.log(`Update for ${routeId} is already in progress. Skipping.`);
     return;
@@ -127,26 +127,28 @@ export const plotLiveData = async (
     }
 
     const currentLiveData = get(liveData);
-    const currentOverlays = get(overlays);
+    // const currentOverlays = get(overlays);
 
-    // Remove the existing layer group if it exists
+    // First, clean up the previous data (if any) before adding new layers
     const existingLayerGroup = currentLiveData.get(routeId);
-    if (existingLayerGroup) {
-      map.removeLayer(existingLayerGroup);
-      currentLiveData.delete(routeId);
+    if (existingLayerGroup && layerControl) {
+      map.removeLayer(existingLayerGroup);  // Remove the existing layer
+      currentLiveData.delete(routeId);  // Delete from live data store
+
+      // Also remove from layerControl to prevent duplicate entries
+      layerControl.removeLayer(existingLayerGroup);
     }
 
     // Create new layers for the vehicles
     const vehicleLayers: L.Layer[] = vehicles.map((vehicle: any) => {
       const { attributes } = vehicle;
       const coordinates: L.LatLngExpression = [attributes.latitude, attributes.longitude];
-      const color = getRouteColor(routeId) || "yellow";
 
-      return L.circleMarker(coordinates, {
-        color,
-        fillColor: "black",
+      return L.circle(coordinates, {
+        color: "black",
+        fillColor: "yellow",
         fillOpacity: 1,
-        radius: 8,
+        radius: 30,
       });
     });
 
@@ -158,7 +160,7 @@ export const plotLiveData = async (
 
     // Add to layer control if not already added
     const overlayName = `${routeId} Line Live Tracking`;
-    if (!currentOverlays.has(overlayName)) {
+    if (layerControl) {
       layerControl.addOverlay(layerGroup, overlayName);
 
       overlays.update((data) => {
