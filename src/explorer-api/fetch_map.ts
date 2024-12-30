@@ -1,7 +1,7 @@
 import { simpleFetch } from "simple-fetch-ts";
-import { plotLiveData, plotMultipleRoutes } from "../map_helpers";
+import { plotLiveData, plotMultipleRoutes } from "../utils/map_helpers";
 import { SUBWAY_ROUTES } from "../constants";
-import type { Map as LeafletMap, Control } from 'leaflet';
+import { mapLayerControl } from "../stores/map_store";
 
 /**
  * Base URL for fetching MBTA subway routes.
@@ -22,9 +22,7 @@ const getFetchLiveMBTASubwayDataURL = (routeId: string): string =>
  * @param layerControl - Leaflet control for managing layers on the map.
  * @returns A promise that resolves when live data updates are complete.
  */
-export const updateLiveData = async (
-  layerControl: Control.Layers
-): Promise<void> => {
+export const updateLiveData = async (): Promise<void> => {
   try {
     // Create promises for updating live data for each route
     const liveDataPromises = SUBWAY_ROUTES.map(async (routeId: string) => {
@@ -32,7 +30,7 @@ export const updateLiveData = async (
       const liveVehicleCoordinates = await simpleFetch<any[]>(url);
 
       if (liveVehicleCoordinates && liveVehicleCoordinates.length > 0) {
-        await plotLiveData(layerControl, liveVehicleCoordinates, routeId);
+        await plotLiveData(liveVehicleCoordinates, routeId);
       }
     });
 
@@ -50,9 +48,7 @@ export const updateLiveData = async (
  * @param layerControl - Leaflet control for managing layers on the map.
  * @returns A promise that resolves when the entire data-fetching and plotting process is complete.
  */
-export const fetchMapData = async (
-  layerControl: Control.Layers
-): Promise<void> => {
+export const fetchMapData = async (): Promise<void> => {
   try {
     // Fetch subway route data
     const subwayRouteData = await simpleFetch<any[]>(fetchMBTASubwayURL) || [];
@@ -63,10 +59,10 @@ export const fetchMapData = async (
     }
 
     // Plot subway routes on the map
-    plotMultipleRoutes(layerControl, subwayRouteData);
+    plotMultipleRoutes(subwayRouteData);
 
     // Fetch and plot live vehicle data
-    await updateLiveData(layerControl);
+    await updateLiveData();
   } catch (error) {
     console.error("Error fetching and plotting map data:", error);
   }
