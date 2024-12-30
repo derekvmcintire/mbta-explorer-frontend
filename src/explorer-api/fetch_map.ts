@@ -42,5 +42,5 @@ export const fetchMapData = async (map: any, layerControl: any) => {
 
   // @TODO sort fetching live data on page load
   // Now fetch and plot live vehicle data after the routes have been plotted
-  await updateLiveData(map, layerControl);  // This ensures live data is plotted after routes
+  // await updateLiveData(map, layerControl);  // This ensures live data is plotted after routes
 };

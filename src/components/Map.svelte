@@ -20,7 +20,7 @@
     fetchMapData(map, layerControl);
 
     // Start polling
-    const POLLING_INTERVAL = 1000; // 5 seconds
+    const POLLING_INTERVAL = 5000; // 5 seconds
     const MAX_POLLING_TIME = 1800000;
 
     const interval = setInterval(
