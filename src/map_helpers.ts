@@ -1,72 +1,78 @@
 import * as L from "leaflet";
 import { getRouteColor } from "./constants";
 
-// // Helper to add layers in bulk
-// const addLayerGroup = (map: any, layers: L.Layer[]): void => {
-//   const layerGroup = L.layerGroup(layers);
-//   layerGroup.addTo(map);
-// };
+// Define types for route and stop structures
+interface StopAttributes {
+  latitude: number;
+  longitude: number;
+}
 
-// // Optimize route plotting
-// export const plotRoute = (map: any, coordinates: any[], color: string): L.Polyline => {
-//   return L.polyline(coordinates, { color }).addTo(map);
-// };
+interface Route {
+  id: string;
+  coordinates: [number, number][]; // Array of lat/lng pairs
+  stops: { attributes: StopAttributes }[];
+}
 
-// // Optimize stop plotting
-// export const plotStop = (map: any, coordinates: L.LatLngExpression, color: string): L.Circle => {
-//   return L.circle(coordinates, {
-//     color,
-//     fillColor: color,
-//     fillOpacity: 0.5,
-//     radius: 50,
-//   });
-// };
+interface RouteMap {
+  [routeId: string]: {
+    shape: L.Polyline;
+    stops: L.CircleMarker[];
+  };
+}
 
-// Plot multiple routes with optimizations
-export const plotMultipleRoutes = (map: any, routes: any[]): void => {
-  const routeLayers: L.Layer[] = [];
-  const stopLayers: L.Layer[] = [];
+// Helper function to create the route shape (polyline)
+const createRouteShape = (coordinates: [number, number][], color: string): L.Polyline => {
+  return L.polyline(coordinates, { color });
+};
 
-  routes.forEach((route: any) => {
+// Helper function to create a stop marker (circleMarker)
+const createStopMarker = (latitude: number, longitude: number, color: string): L.CircleMarker => {
+  return L.circleMarker([latitude, longitude], {
+    color,
+    fillColor: "white",
+    fillOpacity: 1,
+    radius: 10
+  });
+};
+
+// Main function to plot multiple routes
+export const plotMultipleRoutes = (
+  map: L.Map,
+  layerControl: L.Control.Layers,
+  routes: Route[]
+): void => {
+  const routeMap: RouteMap = {};
+
+  routes.forEach((route) => {
     const color = getRouteColor(route.id) || "";
+    const coordinates =
+      route.id === "Green-E" ? route.coordinates.slice(0, 2) : route.coordinates;
 
-    // Handle special case for "Green-E"
-    const routeCoordinates = route.id === "Green-E"
-      ? route.coordinates.slice(0, 2) // Only first two coordinates
-      : route.coordinates;
+    const shape = createRouteShape(coordinates, color);
 
-    // Add route layer
-    routeLayers.push(L.polyline(routeCoordinates, { color }));
-
-    // Add stops for the route
-    route.stops.forEach((stop: any) => {
+    const stops = route.stops.map((stop) => {
       const { attributes } = stop;
-      const coordinates: L.LatLngExpression = [attributes.latitude, attributes.longitude];
-      stopLayers.push(
-        L.circleMarker(coordinates, {
-          color,
-          fillColor: "white",
-          fillOpacity: 1,
-          radius: 10,
-        })
-      );
+      return createStopMarker(attributes.latitude, attributes.longitude, color);
     });
+
+    // Store the route data in the routeMap
+    routeMap[route.id] = { shape, stops };
   });
 
-  // Add all routes and stops as layer groups
-  const routeLayerGroup = L.layerGroup(routeLayers).setZIndex(1);
-  routeLayerGroup.addTo(map);
-  const stopLayerGroup = L.layerGroup(stopLayers).setZIndex(1);
-  stopLayerGroup.addTo(map);
-  // addLayerGroup(map, routeLayers);
-  // addLayerGroup(map, stopLayers);
+  // Add routes and stops to the map with layer control
+  Object.entries(routeMap).forEach(([routeId, { shape, stops }]) => {
+    const routeLayerGroup = L.layerGroup([shape, ...stops]);
+    routeLayerGroup.addTo(map);
+
+    // Add to the layer control with the route name
+    layerControl.addOverlay(routeLayerGroup, `${routeId} Line`);
+  });
 };
 
 // Plot live data with throttling
-export const plotLiveData = (map: any, vehicles: any[], routeId: string): void => {
+export const plotLiveData = (map: any, layerControl: any, vehicles: any[], routeId: string): void => {
   const vehicleLayers: L.Layer[] = vehicles.map((vehicle: any) => {
     const { attributes } = vehicle;
-    console.log('attributes: ', attributes)
     const coordinates: L.LatLngExpression = [attributes.latitude, attributes.longitude];
     const color = getRouteColor(routeId) || "yellow";
 
@@ -80,4 +86,6 @@ export const plotLiveData = (map: any, vehicles: any[], routeId: string): void =
 
   const layerGroup = L.layerGroup(vehicleLayers).setZIndex(1000);
   layerGroup.addTo(map);
+  layerControl.addOverlay(layerGroup, `${routeId} Line Live Tracking`);
+
 };

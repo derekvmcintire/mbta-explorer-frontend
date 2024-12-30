@@ -80,3 +80,12 @@ button:focus-visible {
   }
 }
 
+/* Override the alignment for the layer control toggles */
+.leaflet-control-layers label {
+  text-align: left; /* Align labels to the left */
+}
+
+/* Optional: Adjust the padding for better spacing */
+.leaflet-control-layers label span {
+  padding-left: 4px; /* Add padding between the checkbox and label */
+}
