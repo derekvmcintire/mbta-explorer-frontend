@@ -1,45 +1,12 @@
 import { simpleFetch } from "simple-fetch-ts";
-import { plotLiveData, plotMultipleRoutes } from "../utils/map_helpers";
+import { plotMultipleRoutes } from "../utils/map_helpers";
 import { SUBWAY_ROUTES } from "../constants";
-import { mapLayerControl } from "../stores/map_store";
+import { updateLiveData } from "./fetch_live_vehicles";
 
 /**
  * Base URL for fetching MBTA subway routes.
  */
 const fetchMBTASubwayURL = `http://localhost:8080/api/routes?route_ids=${SUBWAY_ROUTES.join(",")}`;
-
-/**
- * Generates the URL for fetching live vehicle data for a specific route.
- * @param routeId - The ID of the subway route.
- * @returns A string URL for fetching live vehicle data.
- */
-const getFetchLiveMBTASubwayDataURL = (routeId: string): string => 
-  `http://localhost:8080/api/live?route_id=${routeId}`;
-
-/**
- * Fetches and updates live vehicle data on the map for all subway routes.
- * 
- * @param layerControl - Leaflet control for managing layers on the map.
- * @returns A promise that resolves when live data updates are complete.
- */
-export const updateLiveData = async (): Promise<void> => {
-  try {
-    // Create promises for updating live data for each route
-    const liveDataPromises = SUBWAY_ROUTES.map(async (routeId: string) => {
-      const url = getFetchLiveMBTASubwayDataURL(routeId);
-      const liveVehicleCoordinates = await simpleFetch<any[]>(url);
-
-      if (liveVehicleCoordinates && liveVehicleCoordinates.length > 0) {
-        await plotLiveData(liveVehicleCoordinates, routeId);
-      }
-    });
-
-    // Wait for all live data updates to complete
-    await Promise.all(liveDataPromises);
-  } catch (error) {
-    console.error("Error updating live data:", error);
-  }
-};
 
 /**
  * Fetches subway route data and plots it on the map.
