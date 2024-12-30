@@ -3,28 +3,30 @@
   import * as L from "leaflet";
   import { fetchMapData, updateLiveData } from "../explorer-api/fetch_map";
   import { cartocdnTile } from "../constants";
-
-  let map: L.Map;
+  import { mapStore } from "../stores/map_store";
 
   const tile = cartocdnTile;
+
   onMount(async () => {
-    map = L.map("map", { renderer: L.canvas() }).setView(
-      [42.3601, -71.0589],
-      13
-    ); // Boston
+    const map = L.map("map", {
+      center: [42.3601, -71.0589], // Boston coordinates
+      zoom: 13,
+    });
     L.tileLayer(tile.url, {
       attribution: tile.attribution,
     }).addTo(map);
     const layerControl = L.control.layers({}).addTo(map);
 
-    fetchMapData(map, layerControl);
+    mapStore.set(map);
+
+    fetchMapData(layerControl);
 
     // Start polling
     const POLLING_INTERVAL = 5000; // 5 seconds
     const MAX_POLLING_TIME = 1800000;
 
     const interval = setInterval(
-      () => updateLiveData(map, layerControl),
+      () => updateLiveData(layerControl),
       POLLING_INTERVAL
     );
 

@@ -1,8 +1,9 @@
 import * as L from "leaflet";
 import { getRouteColor } from "./constants";
-import { liveData, overlays } from "./components/store";
-import type { Map as LeafletMap, Control } from 'leaflet';
-import { get } from 'svelte/store';
+import { liveData, overlays } from "./stores/boston_subway_store";
+import type { Control } from "leaflet";
+import { get } from "svelte/store";
+import { mapStore, type MapStore } from "./stores/map_store";
 
 // Define types for route and stop structures
 interface StopAttributes {
@@ -23,27 +24,50 @@ interface RouteMap {
   };
 }
 
-// Helper function to create the route shape (polyline)
+/**
+ * Creates a polyline representing a route shape.
+ *
+ * @param coordinates - Array of latitude and longitude pairs defining the route.
+ * @param color - The color of the polyline.
+ * @returns A Leaflet Polyline instance.
+ */
 const createRouteShape = (coordinates: [number, number][], color: string): L.Polyline => {
   return L.polyline(coordinates, { color });
 };
 
-// Helper function to create a stop marker (circleMarker)
+/**
+ * Creates a circle marker representing a stop on the route.
+ *
+ * @param latitude - The latitude of the stop.
+ * @param longitude - The longitude of the stop.
+ * @param color - The border color of the stop marker.
+ * @returns A Leaflet CircleMarker instance.
+ */
 const createStopMarker = (latitude: number, longitude: number, color: string): L.CircleMarker => {
   return L.circleMarker([latitude, longitude], {
     color,
     fillColor: "white",
     fillOpacity: 1,
-    radius: 10
+    radius: 10,
   });
 };
 
-// Main function to plot multiple routes
+/**
+ * Plots multiple routes on the map and adds them to the layer control.
+ *
+ * @param layerControl - A Leaflet layer control to manage the visibility of routes.
+ * @param routes - An array of routes, each containing coordinates and stops.
+ */
 export const plotMultipleRoutes = (
-  map: L.Map,
   layerControl: L.Control.Layers,
   routes: Route[]
 ): void => {
+  const map: MapStore = get(mapStore);
+
+  if (!map) {
+    throw new Error("Map is undefined");
+  }
+
   const routeMap: RouteMap = {};
 
   routes.forEach((route) => {
@@ -58,72 +82,99 @@ export const plotMultipleRoutes = (
       return createStopMarker(attributes.latitude, attributes.longitude, color);
     });
 
-    // Store the route data in the routeMap
     routeMap[route.id] = { shape, stops };
   });
 
-  // Add routes and stops to the map with layer control
   Object.entries(routeMap).forEach(([routeId, { shape, stops }]) => {
     const routeLayerGroup = L.layerGroup([shape, ...stops]);
     routeLayerGroup.addTo(map);
 
-    // Add to the layer control with the route name
     layerControl.addOverlay(routeLayerGroup, `${routeId} Line`);
   });
 };
 
-export const plotLiveData = (
-  map: LeafletMap,
+/**
+ * A record that represents the lock status of routes.
+ * The keys are route names and the values are boolean values indicating whether the route is locked or not.
+ */
+const routeLocks: Record<string, boolean> = {};
+
+/**
+ * Plots live vehicle data for a specific route on the map, replacing any existing data for that route.
+ * Prevents concurrent updates for the same route using a lock mechanism.
+ *
+ * @param layerControl - A Leaflet layer control to manage the live tracking overlays.
+ * @param vehicles - An array of vehicle objects, each containing latitude and longitude attributes.
+ * @param routeId - The ID of the route for which live data is being plotted.
+ */
+export const plotLiveData = async (
   layerControl: Control.Layers,
   vehicles: any[],
   routeId: string
-): void => {
-  // Get the current liveData map from the store
-  const currentLiveData = get(liveData);
-  const currentOverlays = get(overlays);
-
-  // Remove the previous layer group if it exists
-  const existingLayerGroup = currentLiveData.get(routeId);
-  if (existingLayerGroup) {
-    map.removeLayer(existingLayerGroup);
-    currentLiveData.delete(routeId);
+): Promise<void> => {
+  if (routeLocks[routeId]) {
+    console.log(`Update for ${routeId} is already in progress. Skipping.`);
+    return;
   }
 
-  // Create new layers for the vehicles
-  const vehicleLayers: L.Layer[] = vehicles.map((vehicle: any) => {
-    const { attributes } = vehicle;
-    const coordinates: L.LatLngExpression = [attributes.latitude, attributes.longitude];
-    const color = getRouteColor(routeId) || "yellow";
+  routeLocks[routeId] = true; // Acquire the lock
 
-    return L.circleMarker(coordinates, {
-      color: color,
-      fillColor: "black",
-      fillOpacity: 1,
-      radius: 8,
+  try {
+    const map: MapStore = get(mapStore);
+
+    if (!map) {
+      throw new Error("Map is undefined");
+    }
+
+    const currentLiveData = get(liveData);
+    const currentOverlays = get(overlays);
+
+    // Remove the existing layer group if it exists
+    const existingLayerGroup = currentLiveData.get(routeId);
+    if (existingLayerGroup) {
+      map.removeLayer(existingLayerGroup);
+      currentLiveData.delete(routeId);
+    }
+
+    // Create new layers for the vehicles
+    const vehicleLayers: L.Layer[] = vehicles.map((vehicle: any) => {
+      const { attributes } = vehicle;
+      const coordinates: L.LatLngExpression = [attributes.latitude, attributes.longitude];
+      const color = getRouteColor(routeId) || "yellow";
+
+      return L.circleMarker(coordinates, {
+        color,
+        fillColor: "black",
+        fillOpacity: 1,
+        radius: 8,
+      });
     });
-  });
 
-  // Create a new layer group
-  const layerGroup = L.layerGroup(vehicleLayers).setZIndex(1000);
+    // Create a new layer group
+    const layerGroup = L.layerGroup(vehicleLayers);
 
-  // Add the new layer group to the map
-  layerGroup.addTo(map);
+    // Add the new layer group to the map
+    layerGroup.addTo(map);
 
     // Add to layer control if not already added
     const overlayName = `${routeId} Line Live Tracking`;
     if (!currentOverlays.has(overlayName)) {
       layerControl.addOverlay(layerGroup, overlayName);
-  
-      // Update overlays store
+
       overlays.update((data) => {
         data.add(overlayName);
         return data;
       });
     }
 
-  // Update the liveData store with the new layer group
-  liveData.update((data) => {
-    data.set(routeId, layerGroup);
-    return data;
-  });
+    // Update the liveData store with the new layer group
+    liveData.update((data) => {
+      data.set(routeId, layerGroup);
+      return data;
+    });
+  } catch (error) {
+    console.error(`Error updating live data for route ${routeId}:`, error);
+  } finally {
+    routeLocks[routeId] = false; // Release the lock
+  }
 };

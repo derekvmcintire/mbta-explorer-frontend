@@ -1,3 +1,13 @@
+import * as L from 'leaflet';
+
+type CityCoordinates = {
+  boston: L.LatLngExpression,
+}
+
+export const CITY_COORDINATES: CityCoordinates = {
+  boston: [42.3601, -71.0589],
+}
+
 export const SUBWAY_ROUTES = [
   "Red",
   "Orange",
