@@ -1,5 +1,8 @@
 import * as L from "leaflet";
 import { getRouteColor } from "./constants";
+import { liveData, overlays } from "./components/store";
+import type { Map as LeafletMap, Control } from 'leaflet';
+import { get } from 'svelte/store';
 
 // Define types for route and stop structures
 interface StopAttributes {
@@ -69,8 +72,24 @@ export const plotMultipleRoutes = (
   });
 };
 
-// Plot live data with throttling
-export const plotLiveData = (map: any, layerControl: any, vehicles: any[], routeId: string): void => {
+export const plotLiveData = (
+  map: LeafletMap,
+  layerControl: Control.Layers,
+  vehicles: any[],
+  routeId: string
+): void => {
+  // Get the current liveData map from the store
+  const currentLiveData = get(liveData);
+  const currentOverlays = get(overlays);
+
+  // Remove the previous layer group if it exists
+  const existingLayerGroup = currentLiveData.get(routeId);
+  if (existingLayerGroup) {
+    map.removeLayer(existingLayerGroup);
+    currentLiveData.delete(routeId);
+  }
+
+  // Create new layers for the vehicles
   const vehicleLayers: L.Layer[] = vehicles.map((vehicle: any) => {
     const { attributes } = vehicle;
     const coordinates: L.LatLngExpression = [attributes.latitude, attributes.longitude];
@@ -84,8 +103,27 @@ export const plotLiveData = (map: any, layerControl: any, vehicles: any[], route
     });
   });
 
+  // Create a new layer group
   const layerGroup = L.layerGroup(vehicleLayers).setZIndex(1000);
-  layerGroup.addTo(map);
-  layerControl.addOverlay(layerGroup, `${routeId} Line Live Tracking`);
 
+  // Add the new layer group to the map
+  layerGroup.addTo(map);
+
+    // Add to layer control if not already added
+    const overlayName = `${routeId} Line Live Tracking`;
+    if (!currentOverlays.has(overlayName)) {
+      layerControl.addOverlay(layerGroup, overlayName);
+  
+      // Update overlays store
+      overlays.update((data) => {
+        data.add(overlayName);
+        return data;
+      });
+    }
+
+  // Update the liveData store with the new layer group
+  liveData.update((data) => {
+    data.set(routeId, layerGroup);
+    return data;
+  });
 };

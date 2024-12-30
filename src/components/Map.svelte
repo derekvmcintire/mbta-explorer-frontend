@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import * as L from "leaflet";
-  import { fetchMapData } from "../explorer-api/fetch_map";
+  import { fetchMapData, updateLiveData } from "../explorer-api/fetch_map";
   import { cartocdnTile } from "../constants";
 
   /**
@@ -11,8 +11,6 @@
 
   const tile = cartocdnTile;
   onMount(async () => {
-    // Initialize Map
-    console.log("Initializing Leaflet map...");
     map = L.map("map", { renderer: L.canvas() }).setView(
       [42.3601, -71.0589],
       13
@@ -21,9 +19,21 @@
       attribution: tile.attribution,
     }).addTo(map);
     const layerControl = L.control.layers({}).addTo(map);
-    console.log("Map initialized");
 
     fetchMapData(map, layerControl);
+
+    // Start polling
+    const POLLING_INTERVAL = 5000; // 5 seconds
+    const MAX_POLLING_TIME = 1800000;
+
+    const interval = setInterval(
+      () => updateLiveData(map, layerControl),
+      POLLING_INTERVAL
+    );
+
+    setTimeout(() => {
+      clearInterval(interval);
+    }, MAX_POLLING_TIME);
   });
 </script>
 
