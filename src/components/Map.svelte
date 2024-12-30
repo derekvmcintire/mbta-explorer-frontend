@@ -1,13 +1,10 @@
-<script>
+<script lang="ts">
   import { onMount } from "svelte";
   import * as L from "leaflet";
   import { fetchMapData, updateLiveData } from "../explorer-api/fetch_map";
   import { cartocdnTile } from "../constants";
 
-  /**
-   * @type {any}
-   */
-  let map;
+  let map: L.Map;
 
   const tile = cartocdnTile;
   onMount(async () => {
@@ -23,7 +20,7 @@
     fetchMapData(map, layerControl);
 
     // Start polling
-    const POLLING_INTERVAL = 5000; // 5 seconds
+    const POLLING_INTERVAL = 1000; // 5 seconds
     const MAX_POLLING_TIME = 1800000;
 
     const interval = setInterval(
