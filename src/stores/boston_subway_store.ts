@@ -6,3 +6,5 @@ export const liveData: Writable<Map<string, LayerGroup>> = writable(new Map());
 
 // Store to track added overlays
 export const overlays: Writable<Set<string>> = writable(new Set());
+
+export const streamData: Writable<any> = writable(null);

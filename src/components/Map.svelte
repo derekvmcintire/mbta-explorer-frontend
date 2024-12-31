@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import * as L from "leaflet";
   import { fetchMapData } from "../explorer-api/fetch_map";
   import { cartocdnTile } from "../constants";
   import { mapLayerControl, mapStore } from "../stores/map_store";
   import { updateLiveData } from "../explorer-api/fetch_live_vehicles";
+  import { startListening } from "../explorer-api/stream";
 
   const tile = cartocdnTile;
 
@@ -35,17 +36,38 @@
     // Fetch initial map data (e.g., routes, stops) to display on the map
     fetchMapData();
 
-    // Poll for live vehicle data at a regular interval (every 15 seconds)
-    const POLLING_INTERVAL = 15000; // 15 seconds
-    const MAX_POLLING_TIME = 1800000; // Stop polling after 30 minutes
+    //   // Poll for live vehicle data at a regular interval (every 15 seconds)
+    //   const POLLING_INTERVAL = 15000; // 15 seconds
+    //   const MAX_POLLING_TIME = 1800000; // Stop polling after 30 minutes
 
-    // Set up the polling interval
-    const interval = setInterval(() => updateLiveData(), POLLING_INTERVAL);
+    //   // Set up the polling interval
+    //   const interval = setInterval(() => updateLiveData(), POLLING_INTERVAL);
 
-    // Stop polling after the maximum time limit
-    setTimeout(() => {
-      clearInterval(interval);
-    }, MAX_POLLING_TIME);
+    //   // Stop polling after the maximum time limit
+    //   setTimeout(() => {
+    //     clearInterval(interval);
+    //   }, MAX_POLLING_TIME);
+
+    let eventSource: any;
+
+    onDestroy(() => {
+      if (eventSource) {
+        console.log("Closing EventSource connection...");
+        eventSource.close();
+      }
+    });
+
+    eventSource = new EventSource("http://localhost:8080/stream/vehicles");
+
+    eventSource.onmessage = (event: any) => {
+      console.log("Data received:", event.data);
+    };
+
+    eventSource.onerror = (error: any) => {
+      console.error("Stream error:", error);
+    };
+
+    // startListening("4ee27fc2d5f142aeba25ba162b65a8f6");
   });
 </script>
 
