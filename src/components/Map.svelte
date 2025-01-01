@@ -48,26 +48,26 @@
     //     clearInterval(interval);
     //   }, MAX_POLLING_TIME);
 
-    let eventSource: any;
+    // let eventSource: any;
 
-    onDestroy(() => {
-      if (eventSource) {
-        console.log("Closing EventSource connection...");
-        eventSource.close();
-      }
-    });
+    // onDestroy(() => {
+    //   if (eventSource) {
+    //     console.log("Closing EventSource connection...");
+    //     eventSource.close();
+    //   }
+    // });
 
-    eventSource = new EventSource("http://localhost:8080/stream/vehicles");
+    // eventSource = new EventSource("http://localhost:8080/stream/vehicles");
 
-    eventSource.onmessage = (event: any) => {
-      console.log("Data received:", event.data);
-    };
+    // eventSource.onmessage = (event: any) => {
+    //   console.log("Data received:", event.data);
+    // };
 
-    eventSource.onerror = (error: any) => {
-      console.error("Stream error:", error);
-    };
+    // eventSource.onerror = (error: any) => {
+    //   console.error("Stream error:", error);
+    // };
 
-    // startListening("4ee27fc2d5f142aeba25ba162b65a8f6");
+    startListening();
   });
 </script>
 

@@ -3,6 +3,7 @@ import { liveData, overlays } from "../stores/boston_subway_store";
 import { get } from "svelte/store";
 import { mapLayerControl, mapStore, type MapStore } from "../stores/map_store";
 import { acquireLock, releaseLock } from "./map_lock";
+import type { CustomCircleOptions } from "../types/map_types";
 
 /**
  * Creates vehicle layers (circle markers) for each vehicle in the provided array.
@@ -11,16 +12,18 @@ import { acquireLock, releaseLock } from "./map_lock";
  * @returns An array of Leaflet circle markers representing the vehicles on the map.
  */
 export const createVehicleLayers = (vehicles: any[]): L.Layer[] => {
+  console.log('creating vehicle layers with: ', vehicles)
   return vehicles.map((vehicle: any) => {
     const { attributes } = vehicle;
     const coordinates: L.LatLngExpression = [attributes.latitude, attributes.longitude];
 
     return L.circle(coordinates, {
-      color: "black",
+      color: "yellow",
       fillColor: "yellow",
       fillOpacity: 1,
-      radius: 30,
-    });
+      radius: 80,
+      id: attributes.vehicle_id,
+    } as CustomCircleOptions);
   });
 };
 
@@ -31,7 +34,10 @@ export const createVehicleLayers = (vehicles: any[]): L.Layer[] => {
  * @param map - The current map instance to remove the layer from.
  * @param layerControl - The map's layer control to update after removing the layer.
  */
-const removeExistingLayer = (routeId: string, map: MapStore, layerControl: any): void => {
+export const removeExistingLayer = (routeId: string, map: MapStore, layerControl: any): void => {
+  const checkCurrentLiveData = get(liveData);
+console.log("checkCurrentLiveData:", checkCurrentLiveData);
+console.log("Type of checkCurrentLiveData:", typeof checkCurrentLiveData);
   const currentLiveData = get(liveData);
   const existingLayerGroup = currentLiveData.get(routeId);
 
@@ -49,7 +55,7 @@ const removeExistingLayer = (routeId: string, map: MapStore, layerControl: any):
  * @param map - The map to which the layer group should be added.
  * @throws Throws an error if the map is undefined.
  */
-const addLayerToMap = (layerGroup: L.LayerGroup, map: MapStore): void => {
+export const addLayerToMap = (layerGroup: L.LayerGroup, map: MapStore): void => {
   if (!map) {
     throw new Error("Map is undefined");
   }
@@ -63,7 +69,7 @@ const addLayerToMap = (layerGroup: L.LayerGroup, map: MapStore): void => {
  * @param routeId - The ID of the route being updated.
  * @param layerControl - The map's layer control to update.
  */
-const updateLayerControl = (layerGroup: L.LayerGroup, routeId: string, layerControl: any): void => {
+export const updateLayerControl = (layerGroup: L.LayerGroup, routeId: string, layerControl: any): void => {
   const overlayName = `${routeId} Line Live Tracking`;
   if (layerControl) {
     layerControl.addOverlay(layerGroup, overlayName); // Add the overlay to the layer control
@@ -82,7 +88,7 @@ const updateLayerControl = (layerGroup: L.LayerGroup, routeId: string, layerCont
  * @param routeId - The ID of the route being updated.
  * @param layerGroup - The new layer group containing vehicle markers to be saved in the live data store.
  */
-const updateLiveData = (routeId: string, layerGroup: L.LayerGroup): void => {
+export const updateLiveData = (routeId: string, layerGroup: L.LayerGroup): void => {
   liveData.update((data) => {
     data.set(routeId, layerGroup); // Update the live data store with the new layer group
     return data;
@@ -99,9 +105,10 @@ const updateLiveData = (routeId: string, layerGroup: L.LayerGroup): void => {
  * @returns A Promise that resolves once the live data has been successfully plotted.
  */
 export const plotLiveData = async (vehicles: any[], routeId: string): Promise<void> => {
-  if (!acquireLock(routeId)) return; // Ensure no concurrent updates for the same route
+  // if (!acquireLock(routeId)) return; // Ensure no concurrent updates for the same route
 
   try {
+    console.log('trying to plot live data')
     const map = get(mapStore);
     if (!map) return;
 
@@ -110,14 +117,19 @@ export const plotLiveData = async (vehicles: any[], routeId: string): Promise<vo
 
     // Remove existing layer group for the route
     removeExistingLayer(routeId, map, layerControl);
+    console.log('made it past removeExistingLayers')
 
     // Create new vehicle layers
     const vehicleLayers = createVehicleLayers(vehicles);
+    console.log('vehicleLayers: ', vehicleLayers)
     const layerGroup = L.layerGroup(vehicleLayers);
+
+   
 
     // Add the new layers to the map and layer control
     addLayerToMap(layerGroup, map);
     updateLayerControl(layerGroup, routeId, layerControl);
+    console.log('about to updateLiveData...')
     updateLiveData(routeId, layerGroup); // Update the live data store with the new layer group
 
   } catch (error) {

@@ -17,3 +17,7 @@ export interface RouteMap {
     stops: L.Circle[];
   };
 }
+
+export interface CustomCircleOptions extends L.CircleMarkerOptions {
+  id?: string;
+}

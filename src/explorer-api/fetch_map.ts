@@ -29,7 +29,7 @@ export const fetchMapData = async (): Promise<void> => {
     plotMultipleRoutes(subwayRouteData);
 
     // Fetch and plot live vehicle data
-    await updateLiveData();
+    // await updateLiveData();
   } catch (error) {
     console.error("Error fetching and plotting map data:", error);
   }
