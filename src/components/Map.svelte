@@ -4,7 +4,7 @@
   import { fetchMapData } from "../explorer-api/fetch_map";
   import { cartocdnTile } from "../constants";
   import { mapLayerControl, mapStore } from "../stores/map_store";
-  import { updateLiveData } from "../explorer-api/fetch_live_vehicles";
+  import { startListening as startStreaming } from "../explorer-api/stream";
 
   const tile = cartocdnTile;
 
@@ -35,17 +35,8 @@
     // Fetch initial map data (e.g., routes, stops) to display on the map
     fetchMapData();
 
-    // Poll for live vehicle data at a regular interval (every 15 seconds)
-    const POLLING_INTERVAL = 15000; // 15 seconds
-    const MAX_POLLING_TIME = 1800000; // Stop polling after 30 minutes
-
-    // Set up the polling interval
-    const interval = setInterval(() => updateLiveData(), POLLING_INTERVAL);
-
-    // Stop polling after the maximum time limit
-    setTimeout(() => {
-      clearInterval(interval);
-    }, MAX_POLLING_TIME);
+    // start streaming live vehicle data
+    startStreaming();
   });
 </script>
 

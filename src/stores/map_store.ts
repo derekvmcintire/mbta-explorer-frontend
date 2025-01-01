@@ -1,4 +1,3 @@
-// src/stores/mapStore.ts
 import { writable } from "svelte/store";
 import type { Map } from "leaflet";
 
