@@ -1,7 +1,6 @@
 import { simpleFetch } from "simple-fetch-ts";
 import { plotMultipleRoutes } from "../utils/map_helpers";
 import { SUBWAY_ROUTES } from "../constants";
-// import { updateLiveData } from "./fetch_live_vehicles";
 
 /**
  * Base URL for fetching MBTA subway routes.

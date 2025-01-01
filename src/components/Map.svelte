@@ -4,7 +4,6 @@
   import { fetchMapData } from "../explorer-api/fetch_map";
   import { cartocdnTile } from "../constants";
   import { mapLayerControl, mapStore } from "../stores/map_store";
-  // import { updateLiveData } from "../explorer-api/fetch_live_vehicles";
   import { startListening as startStreaming } from "../explorer-api/stream";
 
   const tile = cartocdnTile;
