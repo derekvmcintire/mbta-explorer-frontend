@@ -1,5 +1,5 @@
-import { map } from "leaflet";
-import { plotLiveData } from "../utils/map_live_data";
+// import { map } from "leaflet";
+// import { plotLiveData } from "../utils/map_live_data";
 import { get } from "svelte/store";
 import { mapStore } from "../stores/map_store";
 import { handleAddOrUpdateEvent, handleRemoveEvent, handleResetEvent } from "../stores/live_track_store";
@@ -27,8 +27,6 @@ export function startListening() {
     const map = get(mapStore);
     if (!map) return;
     handleAddOrUpdateEvent(data, map);
-    console.log("Add event received", data);
-    // Handle added data (e.g., merge with existing data)
   });
 
   // Handle the "update" event
@@ -37,8 +35,6 @@ export function startListening() {
     const map = get(mapStore);
     if (!map) return;
     handleAddOrUpdateEvent(data, map);
-    console.log("Update event received", data);
-    // Handle updated data (e.g., update specific entries)
   });
 
   // Handle the "remove" event
@@ -47,8 +43,6 @@ export function startListening() {
     const map = get(mapStore);
     if (!map) return;
     handleRemoveEvent(data);
-    console.log("Remove event received", data);
-    // Handle removed data (e.g., remove entries from your store)
   });
 
   // Handle connection errors
