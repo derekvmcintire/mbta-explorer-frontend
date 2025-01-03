@@ -28,7 +28,9 @@ export const fetchMapData = async (): Promise<void> => {
 
     // Plot subway routes on the map
     plotMultipleRoutes(subwayRouteData);
+    // fetch initial live data
     updateLiveData();
+    // stream for live updates
     startStreaming();
   } catch (error) {
     console.error("Error fetching and plotting map data:", error);

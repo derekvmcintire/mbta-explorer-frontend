@@ -15,7 +15,6 @@ export function startStreaming() {
   // Handle the "reset" event
   eventSource.addEventListener("reset", (event) => {
     const data = JSON.parse(event.data);
-    console.log('received reset event: ', data)
     const map = get(mapStore);
     if (!map) return;
     handleResetEvent(data, map)
@@ -25,7 +24,6 @@ export function startStreaming() {
   // Handle the "add" event
   eventSource.addEventListener("add", (event) => {
     const data = JSON.parse(event.data);
-    console.log('received add event: ', data)
     const map = get(mapStore);
     if (!map) return;
     handleAddOrUpdateEvent(data, map);
@@ -34,7 +32,6 @@ export function startStreaming() {
   // Handle the "update" event
   eventSource.addEventListener("update", (event) => {
     const data = JSON.parse(event.data);
-    console.log('received update event: ', data)
     const map = get(mapStore);
     if (!map) return;
     handleAddOrUpdateEvent(data, map);
@@ -43,7 +40,6 @@ export function startStreaming() {
   // Handle the "remove" event
   eventSource.addEventListener("remove", (event) => {
     const data = JSON.parse(event.data);
-    console.log('received remove event: ', data)
     const map = get(mapStore);
     if (!map) return;
     handleRemoveEvent(data);
