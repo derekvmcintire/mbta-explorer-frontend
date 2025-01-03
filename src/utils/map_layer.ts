@@ -11,8 +11,7 @@ import type { RouteMap } from "../types/map_types";
  * @returns A Leaflet Polyline instance representing the route's shape.
  */
 export const createRouteShape = (
-  coordinates: [number, number][],
-  color: string,
+  coordinates: L.LatLngExpression[],
 ): L.Polyline => {
   return L.polyline(coordinates, { color: "#bababa" });
 };

@@ -1,5 +1,3 @@
-// import { map } from "leaflet";
-// import { plotLiveData } from "../utils/map_live_data";
 import { get } from "svelte/store";
 import { mapStore } from "../stores/map_store";
 import {
@@ -10,10 +8,18 @@ import {
 
 let eventSource: EventSource;
 
-export function startStreaming() {
-  // Include the API key in the query parameters
+/**
+ * Starts streaming live vehicle data using Server-Sent Events (SSE).
+ *
+ * This function establishes a connection to the server's SSE endpoint and
+ * listens for "reset", "add", "update", and "remove" events. Each event type
+ * is handled to update the map accordingly.
+ */
+export function startStreaming(): void {
+  // Define the SSE endpoint URL
   const url = `http://localhost:8080/stream/vehicles`;
 
+  // Initialize the EventSource connection
   eventSource = new EventSource(url, { withCredentials: false });
 
   // Handle the "reset" event
@@ -56,7 +62,12 @@ export function startStreaming() {
   };
 }
 
-export function stopListening() {
+/**
+ * Stops listening to live vehicle data events.
+ *
+ * Closes the existing SSE connection if it is active and logs the closure.
+ */
+export function stopListening(): void {
   if (eventSource) {
     eventSource.close();
     console.log("SSE connection closed");
