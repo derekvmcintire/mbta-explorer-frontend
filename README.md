@@ -138,7 +138,7 @@ This function plots multiple subway routes on the map, creating polyline shapes 
 ```typescript
 export const plotMultipleRoutes = (
   layerControl: L.Control.Layers,
-  routes: Route[]
+  routes: Route[],
 ): void => {
   // Implementation details...
 };
@@ -152,7 +152,7 @@ This function plots live vehicle data on the map, replacing any existing data fo
 export const plotLiveData = async (
   layerControl: Control.Layers,
   vehicles: any[],
-  routeId: string
+  routeId: string,
 ): Promise<void> => {
   // Implementation details...
 };

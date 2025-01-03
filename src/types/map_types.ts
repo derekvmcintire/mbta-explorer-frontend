@@ -5,10 +5,12 @@ export interface StopAttributes {
   longitude: number;
 }
 
+export type Stop = { attributes: StopAttributes };
+
 export interface Route {
   id: string;
   coordinates: LatLngExpression[];
-  stops: { attributes: StopAttributes }[];
+  stops: Stop[];
 }
 
 export interface RouteMap {

@@ -1,9 +1,9 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import * as L from "leaflet";
-  import { fetchMapData } from "../explorer-api/fetch_map";
   import { estriDark } from "../constants";
   import { mapLayerControl, mapStore } from "../stores/map_store";
+  import { fetchMapData } from "../explorer-api/fetch_map_data";
 
   const tile = estriDark;
 
