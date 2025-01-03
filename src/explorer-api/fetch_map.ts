@@ -1,6 +1,8 @@
 import { simpleFetch } from "simple-fetch-ts";
 import { plotMultipleRoutes } from "../utils/map_helpers";
 import { SUBWAY_ROUTES } from "../constants";
+import { startStreaming } from "./stream";
+import { updateLiveData } from "./fetch_live_vehicles";
 
 /**
  * Base URL for fetching MBTA subway routes.
@@ -26,6 +28,10 @@ export const fetchMapData = async (): Promise<void> => {
 
     // Plot subway routes on the map
     plotMultipleRoutes(subwayRouteData);
+    // fetch initial live data
+    updateLiveData();
+    // stream for live updates
+    startStreaming();
   } catch (error) {
     console.error("Error fetching and plotting map data:", error);
   }

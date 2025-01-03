@@ -6,7 +6,7 @@ import { handleAddOrUpdateEvent, handleRemoveEvent, handleResetEvent } from "../
 
 let eventSource: EventSource;
 
-export function startListening() {
+export function startStreaming() {
   // Include the API key in the query parameters
   const url = `http://localhost:8080/stream/vehicles`;
   

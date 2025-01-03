@@ -66,13 +66,12 @@ export function handleAddOrUpdateEvent(vehicle: Vehicle, map: Map) {
       // Update existing marker
       const { marker } = existingVehicle;
       marker.setLatLng([attributes.latitude, attributes.longitude]);
-      marker.setStyle({ fillColor: "yellow" }); // Optional: Update style
       state[id].data = attributes; // Update state data
     } else {
       // Add new marker
       const marker = L.circle([attributes.latitude, attributes.longitude], {
-        color: "black",
-        fillColor: "yellow",
+        color: "white",
+        fillColor: "white",
         fillOpacity: 1,
         radius: 60,
       }).addTo(map);

@@ -2,11 +2,10 @@
   import { onMount } from "svelte";
   import * as L from "leaflet";
   import { fetchMapData } from "../explorer-api/fetch_map";
-  import { cartocdnTile } from "../constants";
+  import { estriDark } from "../constants";
   import { mapLayerControl, mapStore } from "../stores/map_store";
-  import { startListening as startStreaming } from "../explorer-api/stream";
 
-  const tile = cartocdnTile;
+  const tile = estriDark;
 
   /**
    * Sets up the Leaflet map on component mount, including adding the base tile layer,
@@ -34,9 +33,6 @@
 
     // Fetch initial map data (e.g., routes, stops) to display on the map
     fetchMapData();
-
-    // start streaming live vehicle data
-    startStreaming();
   });
 </script>
 
