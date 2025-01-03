@@ -12,14 +12,15 @@ const fetchMBTASubwayURL = `http://localhost:8080/api/routes?route_ids=${SUBWAY_
 /**
  * Fetches subway route data and plots it on the map.
  * After plotting route data, it fetches and plots live vehicle data for each route.
- * 
+ *
  * @param layerControl - Leaflet control for managing layers on the map.
  * @returns A promise that resolves when the entire data-fetching and plotting process is complete.
  */
 export const fetchMapData = async (): Promise<void> => {
   try {
     // Fetch subway route data
-    const subwayRouteData = await simpleFetch<any[]>(fetchMBTASubwayURL) || [];
+    const subwayRouteData =
+      (await simpleFetch<any[]>(fetchMBTASubwayURL)) || [];
 
     if (subwayRouteData.length === 0) {
       console.log("No subway route data found.");

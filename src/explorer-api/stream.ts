@@ -2,15 +2,18 @@
 // import { plotLiveData } from "../utils/map_live_data";
 import { get } from "svelte/store";
 import { mapStore } from "../stores/map_store";
-import { handleRemoveEvent, handleResetEvent } from "../stores/live_track_store";
-import { handleAddOrUpdateEvent } from "./batch_live_updates";
+import {
+  handleAddOrUpdateEvent,
+  handleRemoveEvent,
+  handleResetEvent,
+} from "./stream_handlers";
 
 let eventSource: EventSource;
 
 export function startStreaming() {
   // Include the API key in the query parameters
   const url = `http://localhost:8080/stream/vehicles`;
-  
+
   eventSource = new EventSource(url, { withCredentials: false });
 
   // Handle the "reset" event
@@ -18,7 +21,7 @@ export function startStreaming() {
     const data = JSON.parse(event.data);
     const map = get(mapStore);
     if (!map) return;
-    handleResetEvent(data, map)
+    handleResetEvent(data, map);
     console.log("Reset event received", data);
   });
 

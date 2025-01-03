@@ -6,7 +6,7 @@
 
 // // /**
 // //  * Creates vehicle layers (circle markers) for each vehicle in the provided array.
-// //  * 
+// //  *
 // //  * @param vehicles - An array of vehicle objects, each containing attributes with latitude and longitude.
 // //  * @returns An array of Leaflet circle markers representing the vehicles on the map.
 // //  */
@@ -26,7 +26,7 @@
 
 // /**
 //  * Removes the existing layer for a given route from the map and updates the live data and layer control.
-//  * 
+//  *
 //  * @param routeId - The ID of the route whose existing layer should be removed.
 //  * @param map - The current map instance to remove the layer from.
 //  * @param layerControl - The map's layer control to update after removing the layer.
@@ -44,7 +44,7 @@
 
 // /**
 //  * Adds a layer group to the map.
-//  * 
+//  *
 //  * @param layerGroup - The group of layers (e.g., vehicle markers) to be added to the map.
 //  * @param map - The map to which the layer group should be added.
 //  * @throws Throws an error if the map is undefined.
@@ -58,7 +58,7 @@
 
 // /**
 //  * Updates the layer control with a new layer group for live tracking of vehicles on a route.
-//  * 
+//  *
 //  * @param layerGroup - The group of layers (e.g., vehicle markers) to be added to the layer control.
 //  * @param routeId - The ID of the route being updated.
 //  * @param layerControl - The map's layer control to update.
@@ -78,7 +78,7 @@
 
 // /**
 //  * Updates the live data store with the new layer group for the given route.
-//  * 
+//  *
 //  * @param routeId - The ID of the route being updated.
 //  * @param layerGroup - The new layer group containing vehicle markers to be saved in the live data store.
 //  */
@@ -93,7 +93,7 @@
 //  * Plots live data (vehicle locations) for a given route and updates the map.
 //  * This function acquires a lock to prevent simultaneous updates for the same route,
 //  * removes any existing layers, and adds the new layers to the map and layer control.
-//  * 
+//  *
 //  * @param vehicles - An array of vehicle objects to be plotted on the map.
 //  * @param routeId - The ID of the route for which live data is being plotted.
 //  * @returns A Promise that resolves once the live data has been successfully plotted.

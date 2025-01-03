@@ -1,18 +1,17 @@
 import { get } from "svelte/store";
-import { vehicleStateMap, type Vehicle } from "../stores/live_track_store";
+import { vehicleStateMap } from "../stores/live_track_store";
 import * as L from "leaflet";
+import { vehicleUpdateQueue } from "../stores/vehicle_update_queue_store";
 
-
-let updateQueue: Vehicle[] = [];
 let isProcessing = false;
 
-function processBatchUpdates(map: L.Map) {
-  console.log('********** processing batched updates **********')
+export function processBatchUpdates(map: L.Map) {
+  const updateQueue = get(vehicleUpdateQueue);
   if (isProcessing || updateQueue.length === 0) return;
 
   isProcessing = true;
   const updates = [...updateQueue]; // Copy the queue
-  updateQueue = []; // Clear the queue
+  vehicleUpdateQueue.set([]);
 
   // Apply updates
   vehicleStateMap.update((state) => {
@@ -21,7 +20,10 @@ function processBatchUpdates(map: L.Map) {
       const existingVehicle = state[id];
 
       if (existingVehicle) {
-        existingVehicle.marker.setLatLng([attributes.latitude, attributes.longitude]);
+        existingVehicle.marker.setLatLng([
+          attributes.latitude,
+          attributes.longitude,
+        ]);
         state[id].data = attributes;
       } else {
         const marker = L.circle([attributes.latitude, attributes.longitude], {
@@ -38,21 +40,4 @@ function processBatchUpdates(map: L.Map) {
   });
 
   isProcessing = false;
-}
-
-export function isDataFresh(vehicle: any): boolean {
-  const { id, attributes } = vehicle;
-  const currentState = get(vehicleStateMap);
-  const existingData = currentState[id]?.data;
-
-  return !existingData || new Date(attributes.updated_at) > new Date(existingData.updated_at);
-}
-
-// Modify `handleAddOrUpdateEvent` to queue updates
-export function handleAddOrUpdateEvent(vehicle: Vehicle, map: L.Map) {
-  if (!isDataFresh(vehicle)) return;
-  updateQueue.push(vehicle);
-
-  // Schedule batch processing
-  setTimeout(() => processBatchUpdates(map), 1000); // Adjust interval as needed
 }
