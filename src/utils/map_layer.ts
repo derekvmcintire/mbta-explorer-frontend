@@ -25,8 +25,8 @@ export const createRouteShape = (coordinates: [number, number][], color: string)
 export const createStopMarker = (latitude: number, longitude: number, color: string): L.Circle => {
   return L.circle([latitude, longitude], {
     color,
-    fillOpacity: 1,
-    radius: 50,
+    fillOpacity: 0,
+    radius: 70,
   });
 };
 

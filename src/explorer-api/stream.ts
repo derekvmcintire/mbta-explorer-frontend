@@ -2,7 +2,8 @@
 // import { plotLiveData } from "../utils/map_live_data";
 import { get } from "svelte/store";
 import { mapStore } from "../stores/map_store";
-import { handleAddOrUpdateEvent, handleRemoveEvent, handleResetEvent } from "../stores/live_track_store";
+import { handleRemoveEvent, handleResetEvent } from "../stores/live_track_store";
+import { handleAddOrUpdateEvent } from "./batch_live_updates";
 
 let eventSource: EventSource;
 
