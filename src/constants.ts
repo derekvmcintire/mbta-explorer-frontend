@@ -35,6 +35,17 @@ export const COMMUTER_ROUTES = [
   "CR-Foxboro",
 ]
 
+// export const SUBWAY_ROUTE_COLORS = {
+//   "Red": "#F2A7A0",
+//   "Orange": "#F1C17B",
+//   "Blue": "#A6C6D1",
+//   "Green-B": "#8C9A5B",
+//   "Green-C": "#8C9A5B",
+//   "Green-D": "#8C9A5B",
+//   "Green-E": "#8C9A5B",
+//   "Mattapan": "#D1A7B8",
+// }
+
 export const SUBWAY_ROUTE_COLORS = {
   "Red": "red",
   "Orange": "orange",
@@ -54,7 +65,7 @@ export const getRouteColor = (route: string) => {
   } else if (COMMUTER_ROUTES.includes(route)) {
     return "purple";
   }
-  return "yellow";
+  return "brown";
 }
 
 export const osmTile = {
@@ -65,4 +76,24 @@ export const osmTile = {
 export const cartocdnTile = {
   url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
   attribution: `&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CartoDB</a>`
+}
+
+export const cartocdnDarkTile = {
+  url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+  attribution: "Map tiles by CartoDB, under CC BY 3.0. Data by OpenStreetMap, under ODbL."
+}
+
+export const stamenTonerDark = {
+  url: "https://stamen-tiles.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.png",
+  attribution: "Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL."
+}
+
+export const estriDark = {
+  url: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+  attribution: "Tiles © Esri, Data from Esri, DeLorme, NAVTEQ, TomTom, Intermap, Increment P Corp."
+}
+
+export const openStreetMapDark = {
+  url: "https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png",
+  attribution: "© OpenStreetMap contributors."
 }

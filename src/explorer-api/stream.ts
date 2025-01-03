@@ -6,7 +6,7 @@ import { handleAddOrUpdateEvent, handleRemoveEvent, handleResetEvent } from "../
 
 let eventSource: EventSource;
 
-export function startListening() {
+export function startStreaming() {
   // Include the API key in the query parameters
   const url = `http://localhost:8080/stream/vehicles`;
   
@@ -15,6 +15,7 @@ export function startListening() {
   // Handle the "reset" event
   eventSource.addEventListener("reset", (event) => {
     const data = JSON.parse(event.data);
+    console.log('received reset event: ', data)
     const map = get(mapStore);
     if (!map) return;
     handleResetEvent(data, map)
@@ -24,6 +25,7 @@ export function startListening() {
   // Handle the "add" event
   eventSource.addEventListener("add", (event) => {
     const data = JSON.parse(event.data);
+    console.log('received add event: ', data)
     const map = get(mapStore);
     if (!map) return;
     handleAddOrUpdateEvent(data, map);
@@ -32,6 +34,7 @@ export function startListening() {
   // Handle the "update" event
   eventSource.addEventListener("update", (event) => {
     const data = JSON.parse(event.data);
+    console.log('received update event: ', data)
     const map = get(mapStore);
     if (!map) return;
     handleAddOrUpdateEvent(data, map);
@@ -40,6 +43,7 @@ export function startListening() {
   // Handle the "remove" event
   eventSource.addEventListener("remove", (event) => {
     const data = JSON.parse(event.data);
+    console.log('received remove event: ', data)
     const map = get(mapStore);
     if (!map) return;
     handleRemoveEvent(data);
