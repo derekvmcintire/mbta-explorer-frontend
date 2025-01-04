@@ -27,6 +27,12 @@ export function isDataFresh(vehicle: Vehicle): boolean {
 let batchTimeout: number | undefined; // Use number for browser setTimeout return type
 const processDelay = 100; // 100 ms
 
+/**
+ * Schedules batch processing of vehicle updates after a delay.
+ *
+ * Ensures that batch processing is triggered only after the specified delay
+ * and avoids overlapping executions.
+ */
 function scheduleBatchProcessing() {
   if (batchTimeout !== undefined) {
     clearTimeout(batchTimeout);
