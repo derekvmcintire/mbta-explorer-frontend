@@ -2,20 +2,23 @@ import { get } from "svelte/store";
 import { vehicleStateMap } from "../stores/live_track_store";
 import * as L from "leaflet";
 import { vehicleUpdateQueue } from "../stores/vehicle_update_queue_store";
+import { mapStore } from "../stores/map_store";
 
 let isProcessing = false;
 
 /**
  * Processes a batch of vehicle updates and updates the map with their locations.
  *
- * @param {L.Map} map - The Leaflet map instance where vehicle markers are displayed.
  *
  * This function processes queued vehicle updates, ensuring that existing vehicles
  * are updated with new positions and attributes, or new markers are created for
  * vehicles not already on the map. It also prevents concurrent processing by
  * using a flag to track processing state.
  */
-export function processBatchUpdates(map: L.Map) {
+export function processBatchUpdates() {
+  const map = get(mapStore);
+  if (!map) return;
+
   const updateQueue = get(vehicleUpdateQueue);
 
   // Exit early if already processing or if there are no updates in the queue.
