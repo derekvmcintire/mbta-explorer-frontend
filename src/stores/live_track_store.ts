@@ -7,6 +7,7 @@ interface VehicleAttributes {
   longitude: number;
   bearing?: number;
   current_status?: string;
+  updated_at?: string;
 }
 
 export interface Vehicle {

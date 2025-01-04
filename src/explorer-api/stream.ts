@@ -1,5 +1,3 @@
-import { get } from "svelte/store";
-import { mapStore } from "../stores/map_store";
 import {
   handleAddOrUpdateEvent,
   handleRemoveEvent,
@@ -25,33 +23,25 @@ export function startStreaming(): void {
   // Handle the "reset" event
   eventSource.addEventListener("reset", (event) => {
     const data = JSON.parse(event.data);
-    const map = get(mapStore);
-    if (!map) return;
-    handleResetEvent(data, map);
+    handleResetEvent(data);
     console.log("Reset event received", data);
   });
 
   // Handle the "add" event
   eventSource.addEventListener("add", (event) => {
     const data = JSON.parse(event.data);
-    const map = get(mapStore);
-    if (!map) return;
-    handleAddOrUpdateEvent(data, map);
+    handleAddOrUpdateEvent(data);
   });
 
   // Handle the "update" event
   eventSource.addEventListener("update", (event) => {
     const data = JSON.parse(event.data);
-    const map = get(mapStore);
-    if (!map) return;
-    handleAddOrUpdateEvent(data, map);
+    handleAddOrUpdateEvent(data);
   });
 
   // Handle the "remove" event
   eventSource.addEventListener("remove", (event) => {
     const data = JSON.parse(event.data);
-    const map = get(mapStore);
-    if (!map) return;
     handleRemoveEvent(data);
   });
 
