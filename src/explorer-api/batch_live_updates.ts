@@ -44,8 +44,8 @@ export function processBatchUpdates() {
       } else {
         // Create a new marker for a vehicle not currently on the map.
         const marker = L.circle([attributes.latitude, attributes.longitude], {
-          color: "white",
-          fillColor: "white",
+          color: "black",
+          fillColor: "yellow",
           fillOpacity: 1,
           radius: 40,
         }).addTo(map);

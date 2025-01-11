@@ -86,19 +86,16 @@ export const cartocdnDarkTile = {
     "Map tiles by CartoDB, under CC BY 3.0. Data by OpenStreetMap, under ODbL.",
 };
 
-export const stamenTonerDark = {
-  url: "https://stamen-tiles.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.png",
-  attribution:
-    "Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL.",
-};
-
 export const estriDark = {
   url: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
   attribution:
     "Tiles © Esri, Data from Esri, DeLorme, NAVTEQ, TomTom, Intermap, Increment P Corp.",
 };
 
-export const openStreetMapDark = {
-  url: "https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png",
-  attribution: "© OpenStreetMap contributors.",
+export const oceanBasemap = {
+  url: "https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}",
+  attribution:
+    "Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri",
 };
+
+export const mapTile = oceanBasemap;

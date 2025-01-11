@@ -1,11 +1,9 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import * as L from "leaflet";
-  import { estriDark } from "../constants";
+  import { mapTile } from "../constants";
   import { mapLayerControl, mapStore } from "../stores/map_store";
   import { fetchMapData } from "../explorer-api/fetch_map_data";
-
-  const tile = estriDark;
 
   /**
    * Sets up the Leaflet map on component mount, including adding the base tile layer,
@@ -19,9 +17,9 @@
       zoom: 13,
     });
 
-    // Add a tile layer from the CartoCDN service
-    L.tileLayer(tile.url, {
-      attribution: tile.attribution,
+    // Add a tile layer
+    L.tileLayer(mapTile.url, {
+      attribution: mapTile.attribution,
     }).addTo(map);
 
     // Create and add a layer control to the map
