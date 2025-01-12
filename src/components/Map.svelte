@@ -11,6 +11,8 @@
    * It also starts polling for live vehicle data every 15 seconds, for a maximum of 30 minutes.
    */
   onMount(async () => {
+    console.log("mounting Map");
+
     // Initialize the map with Boston coordinates and zoom level
     const map = L.map("map", {
       center: [42.3601, -71.0589], // Boston coordinates

@@ -1,9 +1,11 @@
 <script>
   import Map from "./components/Map.svelte";
+  import SpeedDisplay from "./components/SpeedDisplay.svelte";
 </script>
 
 <div id="map-container">
   <Map />
+  <SpeedDisplay />
 </div>
 
 <style>
