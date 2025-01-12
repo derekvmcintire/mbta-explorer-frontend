@@ -1,60 +1,39 @@
 import { get } from "svelte/store";
 import { vehicleStateMap } from "../stores/live_track_store";
-import * as L from "leaflet";
 import { vehicleUpdateQueue } from "../stores/vehicle_update_queue_store";
 import { mapStore } from "../stores/map_store";
+import { VehicleMarkerManager } from "./vehicle_marker_manager";
 
 let isProcessing = false;
 
 /**
- * Processes a batch of vehicle updates and updates the map with their locations.
+ * Processes a batch of vehicle updates from the update queue and updates the map.
  *
- *
- * This function processes queued vehicle updates, ensuring that existing vehicles
- * are updated with new positions and attributes, or new markers are created for
- * vehicles not already on the map. It also prevents concurrent processing by
- * using a flag to track processing state.
+ * This function retrieves updates from the `vehicleUpdateQueue` store, updates the
+ * state of vehicle markers on the map, and prevents concurrent processing by using a flag.
  */
-export function processBatchUpdates() {
+export function processBatchUpdates(): void {
   const map = get(mapStore);
-  if (!map) return;
+  if (!map || isProcessing) return;
 
-  const updateQueue = get(vehicleUpdateQueue);
-
-  // Exit early if already processing or if there are no updates in the queue.
-  if (isProcessing || updateQueue.length === 0) return;
+  const updates = get(vehicleUpdateQueue);
+  if (updates.length === 0) return;
 
   isProcessing = true;
-  const updates = [...updateQueue]; // Copy the queue
-  vehicleUpdateQueue.set([]); // Clear the queue after copying
 
-  // Update the vehicle state map with the new data.
-  vehicleStateMap.update((state) => {
-    updates.forEach((vehicle) => {
-      const { id, attributes } = vehicle;
-      const existingVehicle = state[id];
+  try {
+    // Clear the queue immediately to prevent duplicate processing
+    vehicleUpdateQueue.set([]);
 
-      if (existingVehicle) {
-        // Update the position of the existing vehicle marker.
-        existingVehicle.marker.setLatLng([
-          attributes.latitude,
-          attributes.longitude,
-        ]);
-        state[id].data = attributes; // Update vehicle data.
-      } else {
-        // Create a new marker for a vehicle not currently on the map.
-        const marker = L.circle([attributes.latitude, attributes.longitude], {
-          color: "white",
-          fillColor: "white",
-          fillOpacity: 1,
-          radius: 40,
-        }).addTo(map);
-        state[id] = { marker, data: attributes }; // Add the new vehicle to the state.
-      }
-    });
-
-    return state;
-  });
-
-  isProcessing = false;
+    // Update the vehicle state map with the new data
+    vehicleStateMap.update((currentState) =>
+      updates.reduce(
+        (updatedState, vehicle) =>
+          VehicleMarkerManager.handleVehicleUpdate(vehicle, updatedState, map),
+        currentState,
+      ),
+    );
+  } finally {
+    isProcessing = false;
+  }
 }

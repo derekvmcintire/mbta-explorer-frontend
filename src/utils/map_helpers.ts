@@ -1,8 +1,4 @@
-import {
-  createRouteShape,
-  createStopMarker,
-  addRoutesToMap,
-} from "./map_layer";
+import { addRouteShape, addRoutesToMap, addSubwayStop } from "./map_layer";
 import { getRouteColor } from "../constants";
 import type { Route, RouteMap, Stop } from "../types/map_types";
 
@@ -18,12 +14,15 @@ const plotSingleRoute = (route: Route) => {
     route.id === "Green-E" ? route.coordinates.slice(0, 2) : route.coordinates;
 
   // Create the route shape (polyline) based on the coordinates and color
-  const shape = createRouteShape(coordinates);
+  const shape = addRouteShape(coordinates);
 
   // Create the stop markers based on each stop's latitude and longitude
   const stops = route.stops.map((stop: Stop) => {
     const { attributes } = stop;
-    return createStopMarker(attributes.latitude, attributes.longitude, color);
+    const { latitude, longitude, name, municipality, address } = attributes;
+    const location = { lat: latitude, lng: longitude };
+
+    return addSubwayStop({ location, color, name, municipality, address });
   });
 
   return { shape, stops };
