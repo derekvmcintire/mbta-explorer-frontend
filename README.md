@@ -19,7 +19,7 @@ This project is a frontend application for visualizing live MBTA subway data. It
 
 ## Tech Stack
 
-- **Frontend Framework**: Svelte
+- **Frontend Framework**: [Svelte](https://svelte.dev/)
 - **Map Library**: [Leaflet.js](https://leafletjs.com/examples/quick-start/)
 - **Build Tool**: [Vite](https://vite.dev/)
 - **HTTP Requests**: [simple-fetch-ts](https://www.npmjs.com/package/simple-fetch-ts)
