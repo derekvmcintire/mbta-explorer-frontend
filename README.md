@@ -1,7 +1,13 @@
 # MBTA Explorer Frontend
 
 This project is a frontend application for visualizing live MBTA subway data. It uses Leaflet.js to display a map that contains route and live vehicle information. It relies on the [MBTA-Explorer-API](https://github.com/derekvmcintire/MBTA-Explorer-API), which is a custom API on top of the [MBTA V3 API](https://www.mbta.com/developers/v3-api). The project is built using Svelte, Vite, and TypeScript.
-<img width="654" alt="Screenshot 2025-01-11 at 7 49 23 PM" src="https://github.com/user-attachments/assets/7b838d67-1ae6-44f4-ac45-d9c2d73573e7" />
+
+---
+
+![Screenshot 2025-01-12 at 6 40 03 PM](https://github.com/user-attachments/assets/6e2c3082-d330-4889-a6fb-9a3353e57af1)
+<img width="654" alt="Screenshot 2025-01-11 at 7 49 23 PM" src="https://github.com/user-attachments/assets/a7d99314-ddfc-4a82-82c8-eab4d33e9c1f" />
+
+---
 
 ## Features
 
