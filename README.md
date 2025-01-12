@@ -1,20 +1,21 @@
 # MBTA Explorer Frontend
 
-This project is a frontend application for visualizing live MBTA subway data on a map. It uses Leaflet.js to display the map and route information, and it fetches real-time vehicle data for various subway routes. The project is built using Svelte, Vite, and TypeScript.
+This project is a frontend application for visualizing live MBTA subway data. It uses Leaflet.js to display a map that contains route and live vehicle information. The project is built using Svelte, Vite, and TypeScript.
 
 ## Features
 
 - Displays subway routes on a map.
-- Visualizes real-time vehicle positions for various subway routes.
+- Visualizes real-time vehicle positions.
+- Displays live vehicle information like speed and status in a pop up.
 - Allows overlaying subway routes and live vehicle tracking.
 - Supports custom route and stop markers with different colors.
 
 ## Tech Stack
 
 - **Frontend Framework**: Svelte
-- **Map Library**: Leaflet.js
-- **Build Tool**: Vite
-- **HTTP Requests**: simple-fetch-ts
+- **Map Library**: [Leaflet.js](https://leafletjs.com/examples/quick-start/)
+- **Build Tool**: [Vite](https://vite.dev/)
+- **HTTP Requests**: [simple-fetch-ts](https://www.npmjs.com/package/simple-fetch-ts)
 - **TypeScript**: Static typing for enhanced development experience
 
 ## Prerequisites
@@ -30,7 +31,7 @@ To get started with this project, make sure you have the following installed:
 1. **Clone the repository**:
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/derekvmcintire/mbta-explorer-frontend
    cd mbta-explorer-frontend
    ```
 
@@ -42,7 +43,7 @@ To get started with this project, make sure you have the following installed:
    ```
 
 3. **Configure the backend**:
-   Ensure the backend API for fetching MBTA subway data is running at `http://localhost:8080`. This backend should provide the following endpoints:
+   Ensure the [backend API for fetching MBTA subway data](https://github.com/derekvmcintire/MBTA-Explorer-API) is running at `http://localhost:8080`. This backend should provide the following endpoints:
 
    - `/api/routes?route_ids={route_ids}`: Fetch subway route data.
    - `/api/live?route_id={route_id}`: Fetch live vehicle data for a given route.
@@ -129,46 +130,6 @@ export default app;
 
 The `Map.svelte` component handles rendering the map, fetching route data, and displaying the subway routes and live vehicle positions using Leaflet.js. It interacts with various stores to manage state and updates the map dynamically.
 
-## Functions Overview
-
-### `plotMultipleRoutes`
-
-This function plots multiple subway routes on the map, creating polyline shapes for routes and circle markers for stops.
-
-```typescript
-export const plotMultipleRoutes = (
-  layerControl: L.Control.Layers,
-  routes: Route[],
-): void => {
-  // Implementation details...
-};
-```
-
-### `plotLiveData`
-
-This function plots live vehicle data on the map, replacing any existing data for the specified route. It uses a lock mechanism to prevent concurrent updates for the same route.
-
-```typescript
-export const plotLiveData = async (
-  layerControl: Control.Layers,
-  vehicles: any[],
-  routeId: string,
-): Promise<void> => {
-  // Implementation details...
-};
-```
-
-## Styling
-
-The application uses Leaflet for map rendering, which requires the `leaflet.css` file. The map container is styled to take up the full viewport height (`100vh`), and the map is responsive to window size changes.
-
-```css
-#map-container {
-  height: 100vh;
-  width: 100%;
-}
-```
-
 ## Troubleshooting
 
 - **Backend connection issue**: Ensure the backend API is running at `http://localhost:8080` and accessible from the frontend.
@@ -181,21 +142,6 @@ Feel free to fork the repository, make changes, and submit pull requests. When c
 ### License
 
 This project is open-source and available under the [MIT License](LICENSE).
-
-### Key Sections:
-
-1. **Setup & Installation**: Covers the steps needed to set up and run the project locally.
-2. **Tech Stack**: Lists the technologies and dependencies used in the project.
-3. **Scripts**: Explains the available npm scripts.
-4. **Project Structure**: Details the folder structure and key files.
-5. **Key Components**: Explains the core Svelte components and their responsibilities.
-6. **Functions Overview**: Provides a brief overview of the main functions (`plotMultipleRoutes` and `plotLiveData`).
-7. **Troubleshooting**: Common issues and solutions.
-8. **Contributing**: Instructions for contributing to the project.
-
-# Svelte + TS + Vite
-
-This template should help get you started developing with Svelte and TypeScript in Vite.
 
 ## Recommended IDE Setup
 
