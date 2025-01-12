@@ -28,9 +28,16 @@ export class VehicleMarkerManager {
     const vehicleStatus =
       VEHICLE_STATUS_TEXT_MAP.get(current_status || "") || "";
 
+    const routeText = route || "Not Provided";
+
+    const UNKNOWN_SPEED = "Unknown";
+    const haveSpeed = speed || speed === 0;
+    const speedText = haveSpeed ? speed : UNKNOWN_SPEED;
+    const speedLabel = speedText === UNKNOWN_SPEED ? "" : "mph";
+
     return `
-      <strong>Route: ${route || "Not Provided"}</strong><br>
-      Speed: ${speed || "Unknown"}${speed ? "mph" : ""}<br>
+      <strong>Route: ${routeText}</strong><br>
+      Speed: ${speedText}${speedLabel}<br>
       Status: ${vehicleStatus}<br>
       Updated At: ${updated_at}<br>
     `;

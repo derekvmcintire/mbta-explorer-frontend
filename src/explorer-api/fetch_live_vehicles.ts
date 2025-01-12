@@ -8,7 +8,7 @@ import type { Vehicle } from "../stores/live_track_store";
  * URL for fetching live vehicle data for all subway routes.
  * Includes route IDs for Red, Orange, Blue, Green lines (B, C, D, E), and Mattapan.
  */
-const fetchLiveMBTASubwayDataURL = `http://localhost:8080/api/live?route_id=Red,Orange,Blue,Green-B,Green-C,Green-D,Green-E,Mattapan`;
+const fetchLiveMBTASubwayDataURL = `http://localhost:8080/api/vehicles?route_ids=Red,Orange,Blue,Green-B,Green-C,Green-D,Green-E,Mattapan`;
 
 /**
  * Fetches and updates live vehicle data on the map for all subway routes.
@@ -37,7 +37,7 @@ export const fetchInitialVehicleData = async (): Promise<void> => {
       }
 
       // Trigger event to update the map with new live vehicle data.
-      handleResetEvent(liveVehicleCoordinates, map);
+      handleResetEvent(liveVehicleCoordinates);
     } else {
       // Log a warning if no vehicle data is returned.
       console.warn("No live vehicle data available.");

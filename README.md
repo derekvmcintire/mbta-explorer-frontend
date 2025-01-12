@@ -47,7 +47,7 @@ To get started with this project, make sure you have the following installed:
    Ensure the [backend API for fetching MBTA subway data](https://github.com/derekvmcintire/MBTA-Explorer-API) is running at `http://localhost:8080`. This backend should provide the following endpoints:
 
    - `/api/routes?route_ids={route_ids}`: Fetch subway route data.
-   - `/api/live?route_id={route_id}`: Fetch live vehicle data for a given route.
+   - `/api/vehicle?route_ids={route_ids}`: Fetch live vehicle data for a given route.
 
 4. **Run the development server**:
    To start the development environment, run:
